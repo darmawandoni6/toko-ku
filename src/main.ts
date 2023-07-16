@@ -6,6 +6,7 @@ import env from "dotenv";
 import createHttpError from "http-errors";
 import logger from "morgan";
 
+import settingRouter from "@modules/setting/route";
 import userRouter from "@modules/user/route";
 
 import { errorHandler } from "./middleware/handlingError";
@@ -44,6 +45,7 @@ class App {
     });
 
     this.app.use("/api-v1", userRouter);
+    this.app.use("/api-v1", settingRouter);
 
     this.app.use((req, res, next) => {
       next(createHttpError.NotFound());
