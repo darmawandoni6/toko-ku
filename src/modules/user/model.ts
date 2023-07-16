@@ -1,19 +1,17 @@
 import { DataTypes, Model, Optional } from "sequelize";
 
 import sequelize from "@databases/sequelize";
-import RoleModel from "@modules/role/model";
 
 import { UserAttributes } from "./interface";
 
-type UserCreationAttributes = Optional<UserAttributes, "id">;
+type UserCreationAttributes = Optional<UserAttributes, "id" | "foto">;
 interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes {
-  roleId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 const UserModel = sequelize.define<UserInstance>(
-  "users",
+  "user",
   {
     id: {
       allowNull: false,
@@ -29,11 +27,20 @@ const UserModel = sequelize.define<UserInstance>(
       allowNull: false,
       type: DataTypes.STRING,
     },
+    level: {
+      allowNull: false,
+      type: DataTypes.ENUM("admin", "karyawan"),
+    },
+    status: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    foto: {
+      type: DataTypes.BLOB("long"),
+    },
   },
   { freezeTableName: true },
 );
-
-RoleModel.hasOne(UserModel);
-UserModel.belongsTo(RoleModel);
 
 export default UserModel;

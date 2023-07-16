@@ -1,42 +1,43 @@
+export enum Level {
+  Admin = "admin",
+  Karyawan = "karyawan",
+}
 export interface UserAttributes {
   id: number;
   username: string;
   password: string;
+  level: Level;
+  status: boolean;
+  foto?: string;
 }
 
 export interface IError {
   error?: string;
 }
 
-export interface RequestBody {
-  username: string;
-  password: string;
-  roleId?: number;
-}
-export interface ResValidation extends IError {
-  value?: RequestBody;
-}
-
-export interface ILogin {
-  token: string;
-  expired: Date;
-}
-
 export interface IResult extends IError {
-  data?: ILogin | UserAttributes | null;
+  data?: UserAttributes | null;
 }
 
-export interface ResponseBody extends IResult {
+export interface ResBody extends IResult {
   message: string;
   status: number;
 }
 
-export type IWhere = {
-  id?: number;
+export interface ReqBody {
+  username: string;
+  password: string;
+  level: Level;
+  status: boolean;
+  foto: string;
+}
+
+export type TWhere = {
+  id: number;
   username?: string;
 };
 
-export type TEdit = {
+export interface IEdit {
+  payload: ReqBody;
   id: number;
-  payload: RequestBody;
-};
+}

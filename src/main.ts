@@ -6,8 +6,7 @@ import env from "dotenv";
 import createHttpError from "http-errors";
 import logger from "morgan";
 
-import roleRouter from "@modules/role/routes";
-import userRouter from "@modules/user/routes";
+import userRouter from "@modules/user/route";
 
 import { errorHandler } from "./middleware/handlingError";
 
@@ -44,7 +43,6 @@ class App {
       res.send({ message: this.message });
     });
 
-    this.app.use("/api-v1", roleRouter);
     this.app.use("/api-v1", userRouter);
 
     this.app.use((req, res, next) => {
