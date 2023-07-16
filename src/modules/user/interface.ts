@@ -1,3 +1,7 @@
+import { Request } from "express";
+
+import Joi from "joi";
+
 export enum Level {
   Admin = "admin",
   Karyawan = "karyawan",
@@ -28,16 +32,24 @@ export interface ReqBody {
   username: string;
   password: string;
   level: Level;
-  status: boolean;
-  foto: string;
+  status?: boolean;
+  foto?: string;
 }
 
 export type TWhere = {
-  id: number;
+  id?: number;
   username?: string;
 };
 
 export interface IEdit {
   payload: ReqBody;
   id: number;
+}
+
+export interface IValidation {
+  req: Request;
+  schema: Joi.ObjectSchema<ReqBody>;
+}
+export interface IResValidation extends IError {
+  value?: ReqBody;
 }

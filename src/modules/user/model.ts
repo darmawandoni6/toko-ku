@@ -1,16 +1,17 @@
 import { DataTypes, Model, Optional } from "sequelize";
 
 import sequelize from "@databases/sequelize";
+import SettingModel from "@modules/setting/model";
 
 import { UserAttributes } from "./interface";
 
-type UserCreationAttributes = Optional<UserAttributes, "id" | "foto">;
-interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes {
+type CreationAttributes = Optional<UserAttributes, "id" | "foto" | "status">;
+interface Instance extends Model<UserAttributes, CreationAttributes>, UserAttributes {
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-const UserModel = sequelize.define<UserInstance>(
+const UserModel = sequelize.define<Instance>(
   "user",
   {
     id: {
@@ -21,7 +22,7 @@ const UserModel = sequelize.define<UserInstance>(
     },
     username: {
       allowNull: false,
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(30),
     },
     password: {
       allowNull: false,
@@ -29,7 +30,7 @@ const UserModel = sequelize.define<UserInstance>(
     },
     level: {
       allowNull: false,
-      type: DataTypes.ENUM("admin", "karyawan"),
+      type: DataTypes.STRING(30),
     },
     status: {
       allowNull: false,
@@ -42,5 +43,8 @@ const UserModel = sequelize.define<UserInstance>(
   },
   { freezeTableName: true },
 );
+
+UserModel.hasOne(SettingModel);
+SettingModel.belongsTo(UserModel);
 
 export default UserModel;
