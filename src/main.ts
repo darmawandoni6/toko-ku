@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import env from "dotenv";
+import fileUpload from "express-fileupload";
 import createHttpError from "http-errors";
 import logger from "morgan";
 
@@ -38,7 +39,15 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
+    this.app.use(
+      fileUpload({
+        limits: {
+          fileSize: 5 * 1024 * 1024,
+        },
+      }),
+    );
   }
+
   private routes(): void {
     this.app.get("/", (req, res) => {
       res.send({ message: this.message });

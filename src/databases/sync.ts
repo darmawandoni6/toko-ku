@@ -6,8 +6,8 @@ import sequelize from "./sequelize";
 const syncDb = async () => {
   try {
     await sequelize.authenticate();
-    await SettingModel.sync({ force: true });
-    await UserModel.sync({ force: true });
+    await SettingModel.sync({ alter: true });
+    await UserModel.sync();
 
     console.log(`success sync mode ${process.env.ENV}`);
   } catch (error) {

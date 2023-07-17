@@ -1,5 +1,7 @@
 import { Router } from "express";
 
+import jwt from "@utils/jwt";
+
 import controller from "./controller";
 
 class Route {
@@ -10,8 +12,9 @@ class Route {
   }
 
   private routes(): void {
-    this.router.post("/setting", controller.Create);
-    this.router.route("/setting/:id").get(controller.findOne).put(controller.edit);
+    this.router.post("/setting", jwt.verifyAccessToken, controller.create);
+    this.router.put("/setting/:id", jwt.verifyAccessToken, controller.edit);
+    this.router.get("/setting/:fileUrl", jwt.verifyAccessToken, controller.openFile);
   }
 }
 
