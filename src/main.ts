@@ -7,6 +7,7 @@ import fileUpload from "express-fileupload";
 import createHttpError from "http-errors";
 import logger from "morgan";
 
+import kategoriRouter from "@modules/kategori/route";
 import settingRouter from "@modules/setting/route";
 import userRouter from "@modules/user/route";
 
@@ -55,6 +56,7 @@ class App {
 
     this.app.use("/api-v1", userRouter);
     this.app.use("/api-v1", settingRouter);
+    this.app.use("/api-v1", kategoriRouter);
 
     this.app.use((req, res, next) => {
       next(createHttpError.NotFound());
