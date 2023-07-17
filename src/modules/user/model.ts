@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 
 import sequelize from "@databases/sequelize";
+import BarangModel from "@modules/barang/model";
 import SettingModel from "@modules/setting/model";
 
 import { UserAttributes } from "./interface";
@@ -46,5 +47,8 @@ const UserModel = sequelize.define<Instance>(
 
 UserModel.hasOne(SettingModel);
 SettingModel.belongsTo(UserModel);
+
+UserModel.hasMany(BarangModel);
+BarangModel.belongsTo(UserModel);
 
 export default UserModel;
