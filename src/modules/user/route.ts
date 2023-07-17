@@ -1,5 +1,7 @@
 import { Router } from "express";
 
+import jwt from "@utils/jwt";
+
 import controller from "./controller";
 
 class Route {
@@ -13,6 +15,7 @@ class Route {
     this.router.post("/register", controller.register);
     this.router.post("/login", controller.login);
     this.router.put("/user/:id", controller.edit);
+    this.router.get("/user", jwt.verifyAccessToken, controller.profile);
   }
 }
 

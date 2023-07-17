@@ -1,3 +1,5 @@
+import SettingModel from "@modules/setting/model";
+
 import { IEdit, IError, IResult, ReqBody, TWhere } from "./interface";
 import UserModel from "./model";
 
@@ -16,6 +18,23 @@ class Service {
   async findOne(where: TWhere): Promise<IResult> {
     try {
       const res = await UserModel.findOne({ where });
+      return {
+        data: res ? res.toJSON() : null,
+      };
+    } catch (error) {
+      const e = error as Error;
+      return {
+        error: e.message,
+      };
+    }
+  }
+  async findOneProfile(where: TWhere): Promise<IResult> {
+    try {
+      const res = await UserModel.findOne({
+        where,
+        attributes: { exclude: ["password"] },
+        include: [{ model: SettingModel }],
+      });
       return {
         data: res ? res.toJSON() : null,
       };

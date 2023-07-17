@@ -72,6 +72,9 @@ class Controller {
       if (user.error) {
         throw createHttpError.BadRequest(user.error);
       }
+      if (!user.data) {
+        throw createHttpError.NotFound("user/password not found");
+      }
 
       const data: UserAttributes = user.data as UserAttributes;
       const match = bcrypt.compare(value.password, data.password);
@@ -100,10 +103,48 @@ class Controller {
   }
   async edit(req: Request, res: Response, next: NextFunction) {
     try {
+      const schema = Joi.object<ReqBody>({
+        username: Joi.string().min(5).max(30).required(),
+        password: Joi.string().min(8),
+        level: Joi.string().valid(Level.Admin, Level.Karyawan),
+        status: Joi.boolean().required(),
+      });
+      const { value, error } = validation({ req, schema });
+      if (error || !value) {
+        throw createHttpError.BadRequest(error);
+      }
+
+      if (value.password) {
+        value.password = bcrypt.encrypt(value.password);
+      }
+
+      const user = await service.edit({ id: parseInt(req.params.id, 10), payload: value });
+      if (user.error) {
+        throw createHttpError.BadRequest(user.error);
+      }
+
       const result: ResBody = {
         message: "success edit",
         status: 200,
         data: null,
+      };
+
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async profile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = res.locals;
+      const user = await service.findOneProfile({ id });
+      if (user.error) {
+        throw createHttpError.BadRequest(user.error);
+      }
+      const result: ResBody = {
+        message: "success get profile",
+        status: 200,
+        data: user.data,
       };
 
       res.send(result);
