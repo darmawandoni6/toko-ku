@@ -33,10 +33,22 @@ class Service {
       const res = await UserModel.findOne({
         where,
         attributes: { exclude: ["password"] },
-        include: [{ model: SettingModel }],
+        include: [{ model: SettingModel, attributes: { exclude: ["logo"] } }],
       });
+
       return {
-        data: res ? res.toJSON() : null,
+        data: res
+          ? {
+              ...res.toJSON(),
+              setting: res.setting
+                ? {
+                    id: res.setting.id,
+                    nama: res.setting.nama,
+                    fileUrl: process.env.URL + "/setting/" + res.setting.fileUrl,
+                  }
+                : null,
+            }
+          : null,
       };
     } catch (error) {
       const e = error as Error;

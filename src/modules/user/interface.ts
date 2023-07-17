@@ -13,6 +13,11 @@ export interface UserAttributes {
   level: Level;
   status: boolean;
   foto?: string;
+  setting?: {
+    id: number;
+    nama: string;
+    fileUrl: string;
+  } | null;
 }
 
 export interface IError {
