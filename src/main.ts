@@ -11,6 +11,7 @@ import barangRouter from "@modules/barang/route";
 import beliRouter from "@modules/beli/route";
 import beliDetailRouter from "@modules/beliDetail/route";
 import kategoriRouter from "@modules/kategori/route";
+import returRouter from "@modules/retur/route";
 import settingRouter from "@modules/setting/route";
 import suplierRouter from "@modules/suplier/route";
 import userRouter from "@modules/user/route";
@@ -65,6 +66,7 @@ class App {
     this.app.use("/api-v1", suplierRouter);
     this.app.use("/api-v1", beliRouter);
     this.app.use("/api-v1", beliDetailRouter);
+    this.app.use("/api-v1", returRouter);
 
     this.app.use((req, res, next) => {
       next(createHttpError.NotFound());
