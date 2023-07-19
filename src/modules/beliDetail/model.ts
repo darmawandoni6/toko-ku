@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 
 import sequelize from "@databases/sequelize";
 import BarangModel from "@modules/barang/model";
+import ReturModel from "@modules/retur/model";
 
 import { BeliDetailAttributes, Status } from "./interface";
 

@@ -1,7 +1,6 @@
 export enum Status {
   proses = "proses",
   cancel = "cancel",
-  retur = "retur",
   done = "done",
 }
 

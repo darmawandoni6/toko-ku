@@ -14,11 +14,11 @@ class Controller {
         harga: Joi.number(),
         jumlah: Joi.number(),
         total: Joi.number(),
-        status: Joi.string().valid(Status.cancel, Status.done, Status.retur).required(),
+        status: Joi.string().valid(Status.cancel, Status.done).required(),
         beliId: Joi.number(),
         barangId: Joi.number(),
         alasan: Joi.alternatives().conditional("status", {
-          is: Joi.string().valid(Status.cancel, Status.retur),
+          is: Joi.string().valid(Status.cancel),
           then: Joi.string().required(),
         }),
       });
