@@ -15,7 +15,7 @@ class Controller {
         nama: Joi.string().required(),
         hargaPokok: Joi.number().min(1).required(),
         hargaJual: Joi.number().min(1).required(),
-        stok: Joi.number().min(1).required(),
+        stok: Joi.number().required(),
         status: Joi.boolean(),
         kategoriId: Joi.number().required(),
         userId: Joi.number(),
@@ -25,8 +25,8 @@ class Controller {
       if (error || !value) {
         throw createHttpError.BadRequest(error);
       }
-
-      const barang = await service.create({ ...value, userId });
+      value.userId = userId;
+      const barang = await service.create(value);
       if (barang.error) {
         throw createHttpError.BadRequest(barang.error);
       }
@@ -109,7 +109,7 @@ class Controller {
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const { id: userId } = res.locals;
-      const barang = await service.findAll({ userId, status: true });
+      const barang = await service.findAll({ userId });
       if (barang.error) {
         throw createHttpError.BadRequest(barang.error);
       }
