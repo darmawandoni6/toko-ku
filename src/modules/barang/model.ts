@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 
 import sequelize from "@databases/sequelize";
+import ReturModel from "@modules/retur/model";
 
 import { BarangAttributes } from "./interface";
 
@@ -42,5 +43,8 @@ const BarangModel = sequelize.define<Instance>(
   },
   { freezeTableName: true },
 );
+
+BarangModel.hasOne(ReturModel);
+ReturModel.belongsTo(BarangModel);
 
 export default BarangModel;
