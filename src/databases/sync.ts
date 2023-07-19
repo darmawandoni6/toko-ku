@@ -11,7 +11,7 @@ import sequelize from "./sequelize";
 const syncDb = async () => {
   try {
     await sequelize.authenticate();
-    await BeliDetailModel.sync();
+    await BeliDetailModel.sync({ alter: true });
     await BeliModel.sync();
     await SuplierModel.sync();
     await BarangModel.sync();
