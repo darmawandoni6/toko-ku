@@ -12,12 +12,7 @@ export interface UserAttributes {
   password: string;
   level: Level;
   status: boolean;
-  foto?: string;
-  setting?: {
-    id: number;
-    nama: string;
-    fileUrl: string;
-  } | null;
+  foto: string;
 }
 
 export interface IError {
@@ -33,28 +28,15 @@ export interface ResBody extends IResult {
   status: number;
 }
 
-export interface ReqBody {
-  username: string;
-  password: string;
-  level: Level;
-  status?: boolean;
-  foto?: string;
-}
-
-export type TWhere = {
-  id?: number;
-  username?: string;
-};
-
 export interface IEdit {
-  payload: ReqBody;
+  payload: Partial<UserAttributes>;
   id: number;
 }
 
 export interface IValidation {
   req: Request;
-  schema: Joi.ObjectSchema<ReqBody>;
+  schema: Joi.ObjectSchema<UserAttributes>;
 }
 export interface IResValidation extends IError {
-  value?: ReqBody;
+  value?: UserAttributes;
 }

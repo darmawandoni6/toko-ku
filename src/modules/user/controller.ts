@@ -6,28 +6,26 @@ import Joi from "joi";
 import bcrypt from "@utils/bcrypt";
 import jwt from "@utils/jwt";
 
-import { Level, ReqBody, ResBody, TWhere, UserAttributes } from "./interface";
+import { Level, ResBody, UserAttributes } from "./interface";
 import service from "./service";
 import { validation } from "./validation";
 
 class Controller {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const schema = Joi.object<ReqBody>({
+      const schema = Joi.object<UserAttributes>({
         username: Joi.string().min(5).max(30).required(),
         password: Joi.string().min(8).required(),
-        level: Joi.string().valid(Level.Admin, Level.Karyawan),
+        level: Joi.string().valid(Level.Admin, Level.Karyawan).required(),
         status: Joi.boolean(),
+        foto: Joi.string(),
       });
       const { value, error } = validation({ req, schema });
       if (error || !value) {
         throw createHttpError.BadRequest(error);
       }
-      const where: TWhere = {
-        username: value.username,
-      };
 
-      const user = await service.findOne({ username: where.username });
+      const user = await service.findOne({ username: value.username });
       if (user.data) {
         throw createHttpError.Conflict("username already used");
       }
@@ -35,16 +33,9 @@ class Controller {
         throw createHttpError.BadRequest(user.error);
       }
 
-      const payload: ReqBody = {
-        username: value.username,
-        password: bcrypt.encrypt(value.password),
-        level: value.level,
-      };
-      if (value.status) {
-        payload.status = value.status;
-      }
+      value.password = bcrypt.encrypt(value.password);
 
-      await service.create(payload);
+      await service.create(value);
 
       const result: ResBody = {
         message: "success register",
@@ -57,7 +48,7 @@ class Controller {
   }
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const schema = Joi.object<ReqBody>({
+      const schema = Joi.object<UserAttributes>({
         username: Joi.string().required(),
         password: Joi.string().required(),
       });
@@ -65,10 +56,8 @@ class Controller {
       if (error || !value) {
         throw createHttpError.BadRequest(error);
       }
-      const where: TWhere = {
-        username: value.username,
-      };
-      const user = await service.findOne({ username: where.username });
+
+      const user = await service.findOne({ username: value.username });
       if (user.error) {
         throw createHttpError.BadRequest(user.error);
       }
@@ -103,11 +92,12 @@ class Controller {
   }
   async edit(req: Request, res: Response, next: NextFunction) {
     try {
-      const schema = Joi.object<ReqBody>({
-        username: Joi.string().min(5).max(30).required(),
+      const schema = Joi.object<UserAttributes>({
+        username: Joi.string().min(5).max(30),
         password: Joi.string().min(8),
         level: Joi.string().valid(Level.Admin, Level.Karyawan),
-        status: Joi.boolean().required(),
+        status: Joi.boolean(),
+        foto: Joi.string(),
       });
       const { value, error } = validation({ req, schema });
       if (error || !value) {
@@ -137,6 +127,7 @@ class Controller {
   async profile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals;
+
       const user = await service.findOneProfile({ id });
       if (user.error) {
         throw createHttpError.BadRequest(user.error);

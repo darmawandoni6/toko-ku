@@ -1,10 +1,10 @@
 import SettingModel from "@modules/setting/model";
 
-import { IEdit, IError, IResult, ReqBody, TWhere } from "./interface";
+import { IEdit, IError, IResult, UserAttributes } from "./interface";
 import UserModel from "./model";
 
 class Service {
-  async create(payload: ReqBody): Promise<IError> {
+  async create(payload: UserAttributes): Promise<IError> {
     try {
       await UserModel.create(payload);
       return { error: undefined };
@@ -15,7 +15,7 @@ class Service {
       };
     }
   }
-  async findOne(where: TWhere): Promise<IResult> {
+  async findOne(where: Partial<UserAttributes>): Promise<IResult> {
     try {
       const res = await UserModel.findOne({ where });
       return {
@@ -28,7 +28,7 @@ class Service {
       };
     }
   }
-  async findOneProfile(where: TWhere): Promise<IResult> {
+  async findOneProfile(where: Partial<UserAttributes>): Promise<IResult> {
     try {
       const res = await UserModel.findOne({
         where,
@@ -37,18 +37,7 @@ class Service {
       });
 
       return {
-        data: res
-          ? {
-              ...res.toJSON(),
-              setting: res.setting
-                ? {
-                    id: res.setting.id,
-                    nama: res.setting.nama,
-                    fileUrl: process.env.URL + "/setting/" + res.setting.fileUrl,
-                  }
-                : null,
-            }
-          : null,
+        data: res ? res.toJSON() : null,
       };
     } catch (error) {
       const e = error as Error;
