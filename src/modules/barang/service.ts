@@ -1,10 +1,13 @@
+import { Transaction } from "sequelize";
+import { Literal } from "sequelize/types/utils";
+
 import KategoriModel from "@modules/kategori/model";
 
-import { IEdit, IError, IResult, ReqBody, TWhere } from "./interface";
+import { BarangAttributes, IEdit, IError, IResult } from "./interface";
 import BarangModel from "./model";
 
 class Service {
-  async create(payload: ReqBody): Promise<IError> {
+  async create(payload: BarangAttributes): Promise<IError> {
     try {
       await BarangModel.create(payload);
       return { error: undefined };
@@ -26,10 +29,24 @@ class Service {
       };
     }
   }
-  async findOne(where: TWhere): Promise<IResult> {
+  async updateStok(id: number, stok: Literal, transaction: Transaction): Promise<IError> {
+    try {
+      console.log(id, stok);
+
+      await BarangModel.update({ stok }, { where: { id }, transaction });
+      return { error: undefined };
+    } catch (error) {
+      const e = error as Error;
+      console.log(e.message);
+
+      return {
+        error: e.message,
+      };
+    }
+  }
+  async findOne(where: Partial<BarangAttributes>): Promise<IResult> {
     try {
       const res = await BarangModel.findOne({ where });
-
       return { data: res ? res.toJSON() : null };
     } catch (error) {
       const e = error as Error;
@@ -38,7 +55,7 @@ class Service {
       };
     }
   }
-  async findAll(where: TWhere): Promise<IResult> {
+  async findAll(where: Partial<BarangAttributes>): Promise<IResult> {
     try {
       const res = await BarangModel.findAll({
         where,

@@ -3,30 +3,38 @@ import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import Joi from "joi";
 
-import { ReqBody, ResBody } from "./interface";
+import { BarangAttributes, ResBody } from "./interface";
 import service from "./service";
 import { validation } from "./validation";
 
 class Controller {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id: userId } = res.locals;
-      const schema = Joi.object<ReqBody>({
+      const schema = Joi.object<BarangAttributes>({
         nama: Joi.string().required(),
+        barcode: Joi.string().required(),
+        fileName: Joi.string(),
         hargaPokok: Joi.number().min(1).required(),
         hargaJual: Joi.number().min(1).required(),
         stok: Joi.number().required(),
         status: Joi.boolean(),
         kategoriId: Joi.number().required(),
-        userId: Joi.number(),
       });
 
       const { value, error } = validation({ req, schema });
       if (error || !value) {
         throw createHttpError.BadRequest(error);
       }
-      value.userId = userId;
-      const barang = await service.create(value);
+
+      let barang = await service.findOne({ barcode: value.barcode });
+      if (barang.data) {
+        throw createHttpError.Conflict("duplicate data");
+      }
+      if (barang.error) {
+        throw createHttpError.BadRequest(barang.error);
+      }
+
+      barang = await service.create(value);
       if (barang.error) {
         throw createHttpError.BadRequest(barang.error);
       }
@@ -43,14 +51,15 @@ class Controller {
   }
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const schema = Joi.object<ReqBody>({
+      const schema = Joi.object<BarangAttributes>({
         nama: Joi.string(),
+        barcode: Joi.string(),
+        fileName: Joi.string(),
         hargaPokok: Joi.number().min(1),
         hargaJual: Joi.number().min(1),
-        stok: Joi.number().min(1),
+        stok: Joi.number(),
         status: Joi.boolean(),
         kategoriId: Joi.number(),
-        userId: Joi.number(),
       });
 
       const { value, error } = validation({ req, schema });
@@ -75,23 +84,20 @@ class Controller {
   }
   async remove(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id: userId } = res.locals;
-      const find = await service.findOne({ id: parseInt(req.params.id, 10), userId });
-      if (find.error) {
-        throw createHttpError.BadRequest(find.error);
+      let barang = await service.findOne({ id: parseInt(req.params.id, 10) });
+      if (barang.error) {
+        throw createHttpError.BadRequest(barang.error);
       }
-      if (!find.data) {
+      if (!barang.data) {
         throw createHttpError.NotFound();
       }
 
-      const payload: ReqBody = find.data as ReqBody;
-      payload.status = false;
-
-      const barang = await service.update({
+      barang = await service.update({
         id: parseInt(req.params.id, 10),
-        payload,
+        payload: {
+          status: false,
+        },
       });
-
       if (barang.error) {
         throw createHttpError.BadRequest(barang.error);
       }
@@ -108,8 +114,7 @@ class Controller {
   }
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id: userId } = res.locals;
-      const barang = await service.findAll({ userId });
+      const barang = await service.findAll({ status: true });
       if (barang.error) {
         throw createHttpError.BadRequest(barang.error);
       }

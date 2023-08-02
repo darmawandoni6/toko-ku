@@ -4,13 +4,14 @@ import Joi from "joi";
 
 export interface BarangAttributes {
   id: number;
+  barcode: string;
+  fileName: string;
   nama: string;
   hargaPokok: number;
   hargaJual: number;
   stok: number;
   status: boolean;
-  userId?: number;
-  kategoriId?: number;
+  kategoriId: number;
 }
 
 export interface IError {
@@ -38,25 +39,14 @@ export interface ReqBody {
 
 export interface IEdit {
   id: number;
-  payload: ReqBody;
+  payload: Partial<BarangAttributes>;
 }
-
-export type TWhere = {
-  id?: number;
-  nama?: string;
-  hargaPokok?: number;
-  hargaJual?: number;
-  stok?: number;
-  status?: boolean;
-  userId: number;
-  kategoriId?: number;
-};
 
 export interface IValidation {
   req: Request;
-  schema: Joi.ObjectSchema<ReqBody>;
+  schema: Joi.ObjectSchema<BarangAttributes>;
 }
 
 export interface IResValidation extends IError {
-  value?: ReqBody;
+  value?: BarangAttributes;
 }
