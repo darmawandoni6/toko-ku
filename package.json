@@ -5,6 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "sync": "ts-node -r tsconfig-paths/register src/databases/sync.ts",
+    "seed": "ts-node -r tsconfig-paths/register src/databases/seeds.ts",
     "dev": "nodemon -r tsconfig-paths/register src/main.ts",
     "start": "node dist/main.js",
     "build": "rm -rf dist && tsc  && tsc-alias"
